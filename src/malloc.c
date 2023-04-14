@@ -304,9 +304,7 @@ void free(void *ptr)
    assert(curr->free == 0);
    curr->free = true;
    
-   /* TODO: Coalesce free _blocks.  If the next block or previous block 
-            are free then combine them with this block being freed.
-   */
+  
    while(curr)
    {
       if((curr && curr->next) && (curr->free && curr->next->free))
