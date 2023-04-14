@@ -15,7 +15,9 @@ TESTS=		tests/test1 \
                 tests/realloc \
                 tests/calloc \
 				tests/mytest1 \
-				tests/mytest2
+				tests/mytest2 \
+				tests/mytest3 \
+				tests/mytest4
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
