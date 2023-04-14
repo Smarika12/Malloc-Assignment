@@ -13,6 +13,10 @@ int main()
 
   free( ptr2 );
 
+  char * ptr3 = ( char * ) malloc( 100);
+
+  free( ptr3 );
+
   printf("\n Split occurs\n");
 
   return 0;

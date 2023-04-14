@@ -13,6 +13,14 @@ int main()
 
   free( ptr2 );
 
+  char * ptr3 = ( char * ) malloc( 800000);
+
+  free( ptr3 );
+
+  char * ptr4 = ( char * ) malloc( 200);
+
+  free( ptr4 );
+
   printf("\n No splits\n");
 
   return 0;
