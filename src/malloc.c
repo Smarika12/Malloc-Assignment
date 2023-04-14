@@ -307,14 +307,12 @@ void free(void *ptr)
   
    while(curr)
    {
-      if((curr && curr->next) && (curr->free && curr->next->free))
+      if((curr != NULL  && curr->next != NULL) && (curr->free && curr->next->free))
       {
          curr->size = curr->size + curr->next->size + sizeof(struct _block);               
          curr->next = curr->next->next;
-         //num_coalesces++;
          num_blocks--;
       }
-      
       curr = curr->next;
    }
    num_coalesces++;
@@ -323,15 +321,17 @@ void free(void *ptr)
 
 void *calloc( size_t nmemb, size_t size )
 {
-   // \TODO Implement calloc
+  
    struct _block * addr = malloc(nmemb * size);
-   memset(addr,0,nmemb*size);   
+   /*Setting the allocated memory block to zero*/
+   memset(addr,0,nmemb*size); 
+   /*Returning pointer to the start*/  
    return addr;
 }
 
 void *realloc( void *ptr, size_t size )
 {
-   // \TODO Implement realloc
+   
    void * ptr_new = malloc(size);
    memcpy(ptr_new,ptr,size);
    free(ptr);
