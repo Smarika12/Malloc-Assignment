@@ -213,6 +213,7 @@ struct _block *growHeap(struct _block *last, size_t size)
  */
 void *malloc(size_t size) 
 {
+   num_requested++;
 
    if( atexit_registered == 0 )
    {
@@ -302,7 +303,7 @@ void free(void *ptr)
    struct _block *curr = BLOCK_HEADER(ptr);
    assert(curr->free == 0);
    curr->free = true;
-
+   
    /* TODO: Coalesce free _blocks.  If the next block or previous block 
             are free then combine them with this block being freed.
    */
@@ -312,12 +313,13 @@ void free(void *ptr)
       {
          curr->size = curr->size + curr->next->size + sizeof(struct _block);               
          curr->next = curr->next->next;
-         num_coalesces++;
+         //num_coalesces++;
          num_blocks--;
       }
       
       curr = curr->next;
    }
+   num_coalesces++;
    num_frees++;
 }
 
