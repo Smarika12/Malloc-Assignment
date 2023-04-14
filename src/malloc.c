@@ -89,19 +89,63 @@ struct _block *findFreeBlock(struct _block **last, size_t size)
    }
 #endif
 
-// \TODO Put your Best Fit code in this #ifdef block
 #if defined BEST && BEST == 0
-   /** \TODO Implement best fit here */
+   size_t new = 0;
+   struct _block *tail = NULL;
+
+   while (curr && !(curr->free && curr->size <= size)) 
+   {
+      int a = (curr->size)-size;
+      *last = curr;
+      if(curr->free)
+      {
+         if (new < a || a >=0)
+         {
+            new = a;
+            tail = curr;
+         }
+      }
+      curr  = curr->next;
+   }
+   curr = (tail) ? tail : curr;
 #endif
 
-// \TODO Put your Worst Fit code in this #ifdef block
 #if defined WORST && WORST == 0
-   /** \TODO Implement worst fit here */
+   size_t new = 0;
+   struct _block *tail = NULL;
+
+
+   while (curr && !(curr->free && curr->size >= size)) 
+   {
+      int a = (curr->size)-size ;
+      *last = curr;
+      if(curr->free)
+      { 
+         if(new > a)
+         {  
+            if(a >=0)
+            {
+               new = a;
+               tail = curr;
+            }
+         }
+      }
+      curr  = curr->next;
+   }
+   curr = (tail) ? tail : curr;
+
 #endif
 
-// \TODO Put your Next Fit code in this #ifdef block
 #if defined NEXT && NEXT == 0
-   /** \TODO Implement next fit here */
+   
+   curr = (*last != NULL) ? curr->next : curr;
+   
+   while(curr && !(curr->free && curr->size >=size))
+   {
+      *last = curr;
+      curr = curr->next;
+   }
+
 #endif
 
    return curr;
@@ -196,6 +240,8 @@ void *malloc(size_t size)
             If the leftover space in the new block is less than the sizeof(_block)+4 then
             don't split the block.
    */
+
+   
 
    /* Could not find free _block, so grow heap */
    if (next == NULL) 
