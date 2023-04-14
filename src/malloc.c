@@ -241,13 +241,32 @@ void *malloc(size_t size)
             don't split the block.
    */
 
-   
+   if(next!=NULL && (next->size > size))
+   {
+      struct _block * m1 = (struct _block *)sbrk(sizeof(struct _block)+(next->size-size));
+      m1->size = next->size - size;
+      m1->free = 1;
+      m1->next = (next->next != NULL) ? next->next : NULL;
+
+      next->next = m1;
+
+      num_blocks++;
+      num_grows++;
+      num_splits++;
+      num_requested++;
+      num_splits++;
+   }
 
    /* Could not find free _block, so grow heap */
    if (next == NULL) 
    {
       next = growHeap(last, size);
+      num_blocks++;
+      num_grows++;
+      max_heap+=size;
    }
+   else
+      num_reuses++;
 
    /* Could not find free _block or grow heap, so just return NULL */
    if (next == NULL) 
@@ -257,7 +276,7 @@ void *malloc(size_t size)
    
    /* Mark _block as in use */
    next->free = false;
-
+   num_mallocs++;
    /* Return data address associated with _block to the user */
    return BLOCK_DATA(next);
 }
@@ -287,18 +306,36 @@ void free(void *ptr)
    /* TODO: Coalesce free _blocks.  If the next block or previous block 
             are free then combine them with this block being freed.
    */
+   while(curr)
+   {
+      if((curr && curr->next) && (curr->free && curr->next->free))
+      {
+         curr->size = curr->size + curr->next->size + sizeof(struct _block);               
+         curr->next = curr->next->next;
+         num_coalesces++;
+         num_blocks--;
+      }
+      
+      curr = curr->next;
+   }
+   num_frees++;
 }
 
 void *calloc( size_t nmemb, size_t size )
 {
    // \TODO Implement calloc
-   return NULL;
+   struct _block * addr = malloc(nmemb * size);
+   memset(addr,0,nmemb*size);   
+   return addr;
 }
 
 void *realloc( void *ptr, size_t size )
 {
    // \TODO Implement realloc
-   return NULL;
+   void * ptr_new = malloc(size);
+   memcpy(ptr_new,ptr,size);
+   free(ptr);
+   return ptr_new;
 }
 
 
